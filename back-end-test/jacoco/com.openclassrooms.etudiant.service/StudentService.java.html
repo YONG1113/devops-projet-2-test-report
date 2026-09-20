@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">etudiant-backend</a> &gt; <a href="index.source.html" class="el_package">com.openclassrooms.etudiant.service</a> &gt; <span class="el_source">StudentService.java</span></div><h1>StudentService.java</h1><pre class="source lang-java linenums">package com.openclassrooms.etudiant.service;
+
+import com.openclassrooms.etudiant.entities.Student;
+import com.openclassrooms.etudiant.repository.StudentRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.time.Year;
+import java.util.concurrent.ThreadLocalRandom;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class StudentService {
+
+    private final StudentRepository studentRepository;
+
+    public List&lt;Student&gt; findAll() {
+<span class="fc" id="L22">        return studentRepository.findAll();</span>
+    }
+
+    public Student findById(Long id) {
+<span class="fc" id="L26">        Optional&lt;Student&gt; student = studentRepository.findById(id);</span>
+
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (student.isPresent()) {</span>
+<span class="fc" id="L29">            return student.get();</span>
+        } else {
+<span class="fc" id="L31">            throw new IllegalArgumentException(</span>
+                    &quot;Student with id &quot; + id + &quot; not found&quot;);
+        }
+    }
+
+    public Student findByStudentNumber(String studentNumber) {
+<span class="fc" id="L37">        Optional&lt;Student&gt; student = studentRepository.findByStudentNumber(studentNumber);</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (student.isPresent()) {</span>
+<span class="fc" id="L40">            return student.get();</span>
+        } else {
+<span class="fc" id="L42">            throw new IllegalArgumentException(</span>
+                    &quot;Student with number &quot; + studentNumber + &quot; not found&quot;);
+        }
+    }
+
+    public Student create(Student student) {
+<span class="fc" id="L48">        student.setId(null);</span>
+<span class="fc" id="L49">        student.setStudentNumber(generateStudentNumber());</span>
+<span class="fc" id="L50">        return studentRepository.save(student);</span>
+    }
+
+    public Student update(Long id, Student student) {
+<span class="fc" id="L54">        Student existingStudent = findById(id);</span>
+<span class="fc" id="L55">        existingStudent.setFirstName(student.getFirstName());</span>
+<span class="fc" id="L56">        existingStudent.setLastName(student.getLastName());</span>
+<span class="fc" id="L57">        existingStudent.setEmail(student.getEmail());</span>
+<span class="fc" id="L58">        return studentRepository.save(existingStudent);</span>
+    }
+
+    public void delete(Long id) {
+<span class="fc" id="L62">        Student student = findById(id);</span>
+<span class="fc" id="L63">        studentRepository.delete(student);</span>
+<span class="fc" id="L64">    }</span>
+
+    private String generateStudentNumber() {
+<span class="fc" id="L67">        int randomNumber = ThreadLocalRandom.current()</span>
+<span class="fc" id="L68">                .nextInt(0, 1_000_000);</span>
+
+<span class="fc" id="L70">        return &quot;STU-&quot;</span>
+<span class="fc" id="L71">                + Year.now().getValue()</span>
+                + &quot;-&quot;
+<span class="fc" id="L73">                + String.format(&quot;%06d&quot;, randomNumber);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>
